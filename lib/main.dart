@@ -291,7 +291,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:csv/csv.dart';
 import 'dart:async' show Future;
+import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:file_picker/file_picker.dart';
 
 class CSVScreen extends StatefulWidget {
   @override
@@ -302,17 +304,19 @@ class _CSVScreenState extends State<CSVScreen> {
   List<List<dynamic>> data = [];
 
   Future<void> loadCSV() async {
-    final String csvData = await rootBundle.loadString('assets/test.csv');
-    List<List<dynamic>> csvTable = CsvToListConverter().convert(csvData);
-    setState(() {
-      data = csvTable;
-    });
-  }
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+    );
 
-  @override
-  void initState() {
-    super.initState();
-    loadCSV();
+    if (result != null) {
+      Uint8List bytes = await result.files.first.bytes!;
+      String csvData = String.fromCharCodes(bytes);
+      List<List<dynamic>> csvTable = CsvToListConverter().convert(csvData);
+      setState(() {
+        data = csvTable;
+      });
+    }
   }
 
   @override
@@ -323,13 +327,24 @@ class _CSVScreenState extends State<CSVScreen> {
       ),
       body: Container(
         padding: EdgeInsets.all(16.0),
-        child: ListView.builder(
-          itemCount: data.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: Text(data[index].join(', ')),
-            );
-          },
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: loadCSV,
+              child: Text('Upload CSV'),
+            ),
+            SizedBox(height: 16.0),
+            Expanded(
+              child: ListView.builder(
+                itemCount: data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    title: Text(data[index].join(', ')),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
