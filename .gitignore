@@ -1,3 +1,7 @@
-build/* 
 android/*
 ios/*
+.dart_tool/*
+.vscode/*
+build/*
+test/*
+test_driver/*
