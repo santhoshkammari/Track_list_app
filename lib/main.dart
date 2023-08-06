@@ -2,13 +2,13 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'components/wallet.dart';
-import 'components/favorites.dart';
-import 'components/generate_page.dart';
-import 'components/walletmain.dart';
+import 'components_san/favorites.dart';
+import 'components_san/generate_page.dart';
+import 'components_san/walletmain.dart';
+import 'components/progress_bar/progress_bar.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class NavigatorKey {
@@ -22,13 +22,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
+      create: (BuildContext context) => MyAppState(),
       child: MaterialApp(
         title: 'Namer App',
         navigatorKey: NavigatorKey.navigatorKey,
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         ),
         home: MyHomePage(),
       ),
@@ -37,14 +37,14 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
+  WordPair current = WordPair.random();
   void getNext() {
     current = WordPair.random();
     notifyListeners();
   }
 
-  var favorites = <WordPair>[];
-  var transactions = [];
+  List<WordPair> favorites = <WordPair>[];
+  List transactions = [];
 
   void toggleFavorite() {
     if (favorites.contains(current)) {
@@ -66,31 +66,34 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var selectedIndex = 0;
+  int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = GeneratorPage();
-        break;
-      case 1:
+        // page = ProgressBared(
+        //   trackName: 'sample',
+        //   progressValue: 10,
+        //   onIncrement: () {},
+        // );
         page = FavoritesPage();
-        break;
+
+      case 1:
+        page = FuturisticTextInputScreen();
 
       case 2:
-        page = Wallet();
-        break;
-      case 3:
         page = WalletMain();
-        break;
+      case 3:
+        page = GeneratorPage();
 
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
     return Scaffold(
+      // ignore: use_colored_box
       body: Container(
         color: Theme.of(context).colorScheme.primaryContainer,
         child: page,
@@ -98,24 +101,24 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
+              icon: Icon(Icons.list),
+              label: 'list',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: 'Favorites',
+              icon: Icon(Icons.art_track),
+              label: 'Progress',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.wallet),
-              label: 'Wallet',
+              icon: Icon(Icons.thumb_down_off_alt_rounded),
+              label: 'List',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.wallet_rounded),
-              label: 'WalletMain',
+              icon: Icon(Icons.settings),
+              label: 'Settings',
             ),
           ],
           currentIndex: selectedIndex,
-          onTap: (index) {
+          onTap: (int index) {
             setState(() {
               selectedIndex = index;
             });
