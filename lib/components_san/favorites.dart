@@ -174,6 +174,16 @@ class TaskList {
   }
 }
 
+ThemeData lightTheme = ThemeData(
+  // primarySwatch: Colors.blue,
+  brightness: Brightness.light,
+);
+
+ThemeData darkTheme = ThemeData(
+  primarySwatch: Colors.indigo,
+  brightness: Brightness.dark,
+);
+
 class FavoritesPage extends StatefulWidget {
   @override
   _FavoritesPageState createState() => _FavoritesPageState();
@@ -182,6 +192,7 @@ class FavoritesPage extends StatefulWidget {
 class _FavoritesPageState extends State<FavoritesPage> {
   TextEditingController _taskListNameController = TextEditingController();
   List<TaskList> _taskLists = []; // Initialize the list here
+  bool isDarkMode = false; // Initially, set it to false (light mode)
 
   @override
   void initState() {
@@ -236,6 +247,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
     _saveTaskListsToCache();
   }
 
+  void toggleDarkMode() {
+    setState(() {
+      isDarkMode = !isDarkMode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -264,8 +281,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
             TextField(
               controller: _taskListNameController,
               decoration: InputDecoration(labelText: 'Task List Name'),
-              onSubmitted:
-                  _handleTaskListNameSubmit, // Call the handler when submitted
+              onSubmitted: (value) {
+                _addTaskList();
+              }, // Call the handler when submitted
             ),
             SizedBox(height: 20),
             Expanded(

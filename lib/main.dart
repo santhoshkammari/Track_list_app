@@ -78,10 +78,10 @@ class _MyHomePageState extends State<MyHomePage> {
         //   progressValue: 10,
         //   onIncrement: () {},
         // );
-        page = FavoritesPage();
+        page = FuturisticTextInputScreen();
 
       case 1:
-        page = FuturisticTextInputScreen();
+        page = FavoritesPage();
 
       case 2:
         page = WalletMain();
@@ -101,12 +101,12 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.list),
-              label: 'list',
-            ),
-            BottomNavigationBarItem(
               icon: Icon(Icons.art_track),
               label: 'Progress',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.list),
+              label: 'list',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.thumb_down_off_alt_rounded),
@@ -125,7 +125,8 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           selectedItemColor: Colors.deepOrange, // Set the selected item color
           unselectedItemColor: Colors.grey, // Set the unselected item color
-          backgroundColor: Colors.white, // Set the background color
+          backgroundColor:
+              Color.fromARGB(255, 251, 250, 247), // Set the background color
           elevation: 10, // Set the shadow elevation
           type: BottomNavigationBarType.fixed),
     );

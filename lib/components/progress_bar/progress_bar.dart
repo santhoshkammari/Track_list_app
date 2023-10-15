@@ -48,6 +48,7 @@ class _FuturisticTextInputScreenState extends State<FuturisticTextInputScreen> {
   TextEditingController _trackNameController = TextEditingController();
   TextEditingController _countController = TextEditingController();
   List<Task> _taskList = [];
+  bool isDarkMode = false; // Initially, set it to false (light mode)
 
   @override
   void initState() {
@@ -55,15 +56,6 @@ class _FuturisticTextInputScreenState extends State<FuturisticTextInputScreen> {
     _loadTaskList(); // Load the task list when the widget is created.
   }
 
-  // Load the task list from shared preferences.
-  // void _loadTaskList() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   List<String> taskListJson = prefs.getStringList('task_list') ?? [];
-  //   setState(() {
-  //     _taskList =
-  //         taskListJson.map((taskJson) => Task.fromJson(taskJson)).toList();
-  //   });
-  // }
   void _loadTaskList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> taskListJson = prefs.getStringList('task_list') ?? [];
@@ -77,13 +69,6 @@ class _FuturisticTextInputScreenState extends State<FuturisticTextInputScreen> {
     });
   }
 
-  // Save the task list to shared preferences.
-  // void _saveTaskList() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   List<String> taskListJson =
-  //       _taskList.map((task) => task.toJson()).cast<String>().toList();
-  //   prefs.setStringList('task_list', taskListJson);
-  // }
   void _saveTaskList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> taskListJson =
@@ -96,6 +81,8 @@ class _FuturisticTextInputScreenState extends State<FuturisticTextInputScreen> {
       if (_taskList[index].progress < _taskList[index].count) {
         _taskList[index].progress += 1;
         _saveTaskList(); // Save the updated task list when progress is incremented.
+      } else {
+        _removeTask(index);
       }
     });
   }
@@ -114,6 +101,15 @@ class _FuturisticTextInputScreenState extends State<FuturisticTextInputScreen> {
     }
   }
 
+  ThemeData lightTheme = ThemeData(
+    // primarySwatch: Colors.white10,
+    brightness: Brightness.light,
+  );
+
+  ThemeData darkTheme = ThemeData(
+    primarySwatch: Colors.indigo,
+    brightness: Brightness.dark,
+  );
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -176,31 +172,42 @@ class _FuturisticTextInputScreenState extends State<FuturisticTextInputScreen> {
                 ),
                 GestureDetector(
                   onTap: () => _removeTask(index),
-                  child: Icon(Icons.delete),
+                  child: Icon(Icons.assist_walker),
                 ),
               ],
             ),
             SizedBox(height: 10),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(
-                    10.0), // Set the desired border radius here
-                color: Colors.grey[300],
-              ),
-              height: MediaQuery.of(context).size.height * 0.07,
-              child: LinearProgressIndicator(
-                value: task.progress / task.count,
-                backgroundColor: Colors
-                    .transparent, // Set the background color of the progress bar to transparent
-                valueColor: AlwaysStoppedAnimation<Color>(
-                    Color.fromARGB(255, 238, 127, 119)),
-              ),
-            ),
-            SizedBox(height: 10),
             ElevatedButton(
               onPressed: () => _incrementProgress(index),
-              child: Text('Increment Progress'),
+              onLongPress: () => _removeTask(index),
+              style: ElevatedButton.styleFrom(
+                  primary: const Color.fromARGB(255, 244, 242,
+                      242), // Set the button background color to grey
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  padding: EdgeInsets.all(0)),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.08,
+                width: MediaQuery.of(context).size.width * 1,
+                child: LinearProgressIndicator(
+                    value: task.progress / task.count,
+                    backgroundColor: Colors.transparent,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Color.fromARGB(255, 238, 234, 119))),
+              ),
             ),
+
+            // ElevatedButton(
+            //   onPressed: () => _incrementProgress(index),
+            //   child: LinearProgressIndicator(
+            //     value: task.progress / task.count,
+            //     backgroundColor: Colors
+            //         .transparent, // Set the background color of the progress bar to transparent
+            //     valueColor: AlwaysStoppedAnimation<Color>(
+            //         Color.fromARGB(255, 238, 127, 119)),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -257,47 +264,92 @@ class _FuturisticTextInputScreenState extends State<FuturisticTextInputScreen> {
   }
 }
 
-class ProgressBar extends StatelessWidget {
-  ProgressBar({required this.task, required this.onPlusPressed});
-  final Task task;
-  final VoidCallback onPlusPressed;
+// class ProgressBar extends StatelessWidget {
+//   ProgressBar({required this.task, required this.onPlusPressed});
+//   final Task task;
+//   final VoidCallback onPlusPressed;
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Task Name: ${task.name}',
-              style: TextStyle(fontSize: 18),
-            ),
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: onPlusPressed,
-            ),
-          ],
-        ),
-        SizedBox(height: 10),
-        LinearProgressIndicator(
-          value: task.progress,
-          minHeight: MediaQuery.of(context).size.height * 0.03,
-          backgroundColor: Colors.grey[300],
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-        ),
-        SizedBox(height: 10),
-        Text(
-          'Progress Count: ${task.progress}',
-          style: TextStyle(fontSize: 16),
-        ),
-        SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: onPlusPressed,
-          child: Text('Increment Progress'),
-        ),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.stretch,
+//       children: [
+//         Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             Text(
+//               'Task Name: ${task.name}',
+//               style: TextStyle(fontSize: 18),
+//             ),
+//             IconButton(
+//               icon: Icon(Icons.add),
+//               onPressed: onPlusPressed,
+//             ),
+//           ],
+//         ),
+//         SizedBox(height: 10),
+//         LinearProgressIndicator(
+//           value: task.progress,
+//           minHeight: MediaQuery.of(context).size.height * 0.03,
+//           backgroundColor: Colors.grey[300],
+//           valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+//         ),
+//         SizedBox(height: 10),
+//         Text(
+//           'Progress Count: ${task.progress}',
+//           style: TextStyle(fontSize: 16),
+//         ),
+//         SizedBox(height: 10),
+//         ElevatedButton(
+//           onPressed: onPlusPressed,
+//           child: Text('Increment Progress'),
+//         ),
+//       ],
+//     );
+//   }
+// }
+
+// class ProgressBar extends StatelessWidget {
+//   ProgressBar({required this.task, required this.onPlusPressed});
+//   final Task task;
+//   final VoidCallback onPlusPressed;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.stretch,
+//       children: [
+//         Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             Text(
+//               'Task Name: ${task.name}',
+//               style: TextStyle(fontSize: 18),
+//             ),
+//             IconButton(
+//               icon: Icon(Icons.add),
+//               onPressed: onPlusPressed,
+//             ),
+//           ],
+//         ),
+//         SizedBox(height: 10),
+//         LinearProgressIndicator(
+//           value: task.progress,
+//           minHeight: MediaQuery.of(context).size.height * 0.03,
+//           backgroundColor: Colors.grey[300],
+//           valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+//         ),
+//         SizedBox(height: 10),
+//         Text(
+//           'Progress Count: ${task.progress}',
+//           style: TextStyle(fontSize: 16),
+//         ),
+//         SizedBox(height: 10),
+//         ElevatedButton(
+//           onPressed: onPlusPressed,
+//           child: Text('Increment Progress'),
+//         ),
+//       ],
+//     );
+//   }
+// }

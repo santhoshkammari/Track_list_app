@@ -14,12 +14,24 @@ class Settings {
   });
 }
 
+ThemeData lightTheme = ThemeData(
+  primarySwatch: Colors.blue,
+  brightness: Brightness.light,
+);
+
+ThemeData darkTheme = ThemeData(
+  primarySwatch: Colors.indigo,
+  brightness: Brightness.dark,
+);
+
 class GeneratorPage extends StatefulWidget {
   @override
   _GeneratorPageState createState() => _GeneratorPageState();
 }
 
 class _GeneratorPageState extends State<GeneratorPage> {
+  bool isDarkMode = true; // Initially, set it to false (light mode)
+
   List<Settings> _settingsList = [
     Settings(
       title: 'Dark Mode',
@@ -67,18 +79,22 @@ class _GeneratorPageState extends State<GeneratorPage> {
   ];
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Settings')),
-      body: ListView.builder(
-        itemCount: _settingsList.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: Icon(_settingsList[index].icon),
-            title: Text(_settingsList[index].title),
-            subtitle: Text(_settingsList[index].subtitle),
-            trailing: _buildSettingWidget(index),
-          );
-        },
+    ThemeData selectedTheme = isDarkMode ? darkTheme : lightTheme;
+    return MaterialApp(
+      theme: selectedTheme,
+      home: Scaffold(
+        appBar: AppBar(title: Text('Settings')),
+        body: ListView.builder(
+          itemCount: _settingsList.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              leading: Icon(_settingsList[index].icon),
+              title: Text(_settingsList[index].title),
+              subtitle: Text(_settingsList[index].subtitle),
+              trailing: _buildSettingWidget(index),
+            );
+          },
+        ),
       ),
     );
   }
